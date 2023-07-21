@@ -1,34 +1,23 @@
-use monome::{KeyDirection, Monome, MonomeEvent};
-use std::{thread, time};
+mod grid;
+use grid::Grid;
 
 fn main() {
-    let mut m = Monome::new("/prefix").unwrap();
+    Grid::new("/prefix".to_string())
+        .key_up(key_up)
+        .key_down(key_down)
+        .frame(frame)
+        .run();
+}
 
-    let mut grid = vec![0; 128];
+fn key_down(grid: &mut Grid, x: i32, y: i32) {
+    println!("Key pressed: {}x{}", x, y);
+    grid.toggle_pixel(x, y);
+}
 
-    loop {
-        match m.poll() {
-            Some(MonomeEvent::GridKey { x, y, direction }) => match direction {
-                KeyDirection::Down => {
-                    println!("Key pressed: {}x{}", x, y);
+fn key_up(_grid: &mut Grid, x: i32, y: i32) {
+    println!("Key released: {}x{}", x, y);
+}
 
-                    let index = (y as usize * 16) + x as usize;
-
-                    grid[index] = !grid[index];
-                }
-                KeyDirection::Up => {
-                    // println!("Key released: {}x{}", x, y);
-                    // m.set(x, y, false);
-                }
-            },
-            _ => {
-                // break;
-            }
-        }
-
-        m.set_all_intensity(&grid);
-
-        let refresh = time::Duration::from_millis(5);
-        thread::sleep(refresh);
-    }
+fn frame(_grid: &mut Grid) {
+    // println!("Frame");
 }
