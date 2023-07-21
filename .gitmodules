@@ -1,0 +1,9 @@
+[submodule "neotrellis-grid-paletted.git"]
+	path = neotrellis-grid-paletted.git
+	url = https://github.com/iandoesallthethings/neotrellis-grid-paletted.git
+[submodule "neotrellis-monome"]
+	path = neotrellis-monome
+	url = https://github.com/okyeron/neotrellis-monome.git
+[submodule "neotrellis-grid-paletted"]
+	path = neotrellis-grid-paletted
+	url = https://github.com/iandoesallthethings/neotrellis-grid-paletted.git

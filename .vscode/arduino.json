@@ -1,0 +1,6 @@
+{
+    "board": "adafruit:samd:adafruit_itsybitsy_m0",
+    "sketch": "neotrellis-monome/neotrellis_monome_m0/neotrellis_monome_m0.ino",
+    "port": "/dev/tty.usbmodemm42161251",
+    "configuration": "opt=small,usbstack=arduino,debug=off"
+}
