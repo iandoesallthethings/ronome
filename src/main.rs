@@ -1,23 +1,26 @@
 mod grid;
 use grid::Grid;
 
+const FLASH: u8 = 254;
+const DIM: u8 = 2;
 fn main() {
-    Grid::new("/prefix".to_string())
-        .key_up(key_up)
-        .key_down(key_down)
-        .frame(frame)
+    Grid::new()
+        .on_key_down(toggle_pressed)
+        // .on_key_up(key_up)
+        .on_frame(fade)
         .run();
 }
 
-fn key_down(grid: &mut Grid, x: i32, y: i32) {
-    println!("Key pressed: {}x{}", x, y);
-    grid.toggle_pixel(x, y);
+fn toggle_pressed(grid: &mut Grid, x: i32, y: i32) {
+    grid.set_pixel(x, y, FLASH)
 }
 
-fn key_up(_grid: &mut Grid, x: i32, y: i32) {
-    println!("Key released: {}x{}", x, y);
-}
+fn fade(grid: &mut Grid) {
+    for (index, intensity) in grid.pixels.to_owned().iter().enumerate() {
+        let (x, y) = Grid::index_to_coordinate(index);
 
-fn frame(_grid: &mut Grid) {
-    // println!("Frame");
+        if intensity > &0 {
+            grid.set_pixel(x, y, intensity - DIM);
+        }
+    }
 }

@@ -1,27 +1,29 @@
 #![allow(dead_code)]
 use monome::{KeyDirection, Monome, MonomeEvent};
-use std::{thread, time};
-const REFRESH_RATE: u64 = 2;
+use std::thread::sleep;
+use std::time::Duration;
+
+const REFRESH_INTERVAL: Duration = Duration::from_millis(5);
 
 type GridHandler = fn(grid: &mut Grid);
 type PixelHandler = fn(grid: &mut Grid, x: i32, y: i32);
 
 pub struct Grid {
-    pixels: Vec<u8>,
     m: Monome,
-    on_key_down: PixelHandler,
-    on_key_up: PixelHandler,
-    on_frame: GridHandler,
+    pub pixels: Vec<u8>,
+    key_down_handler: PixelHandler,
+    key_up_handler: PixelHandler,
+    frame_handler: GridHandler,
 }
 
 impl Grid {
-    pub fn new(prefix: String) -> Grid {
+    pub fn new() -> Grid {
         Grid {
-            m: Monome::new(prefix).unwrap(),
+            m: Monome::new("/prefix").unwrap(),
             pixels: vec![0; 128],
-            on_key_down: |_, _, _| {},
-            on_key_up: |_, _, _| {},
-            on_frame: |_| {},
+            key_down_handler: |_, _, _| {},
+            key_up_handler: |_, _, _| {},
+            frame_handler: |_| {},
         }
     }
 
@@ -33,6 +35,11 @@ impl Grid {
 
     pub fn set_pixel(&mut self, x: i32, y: i32, intensity: u8) {
         let index = Grid::coordinate_to_index(x, y);
+
+        if index > self.pixels.len() - 1 {
+            return;
+        }
+
         self.pixels[index] = intensity;
     }
 
@@ -46,42 +53,35 @@ impl Grid {
     }
 
     // Builders
-    pub fn key_down(mut self, handler: PixelHandler) -> Grid {
-        self.on_key_down = handler;
+    pub fn on_key_down(mut self, handler: PixelHandler) -> Grid {
+        self.key_down_handler = handler;
         self
     }
 
-    pub fn key_up(mut self, handler: PixelHandler) -> Grid {
-        self.on_key_up = handler;
+    pub fn on_key_up(mut self, handler: PixelHandler) -> Grid {
+        self.key_up_handler = handler;
         self
     }
 
-    pub fn frame(mut self, handler: GridHandler) -> Grid {
-        self.on_frame = handler;
+    pub fn on_frame(mut self, handler: GridHandler) -> Grid {
+        self.frame_handler = handler;
         self
     }
+
+    // pub fn with_color(mut self) -> Grid {
+    //     self
+    // }
 
     pub fn run(&mut self) {
         loop {
             self.handle_input();
-            (self.on_frame)(self);
+
+            self.update_state();
+
             self.draw();
 
-            let refresh = time::Duration::from_millis(REFRESH_RATE);
-            thread::sleep(refresh);
+            sleep(REFRESH_INTERVAL);
         }
-    }
-
-    // Helpers
-    fn coordinate_to_index(x: i32, y: i32) -> usize {
-        ((y * 16) + x) as usize
-    }
-
-    fn index_to_coordinate(index: usize) -> (i32, i32) {
-        let x = index % 16;
-        let y = index / 16;
-
-        (x as i32, y as i32)
     }
 
     //  Runtime
@@ -92,14 +92,30 @@ impl Grid {
     fn handle_input(&mut self) {
         match self.poll() {
             Some(MonomeEvent::GridKey { x, y, direction }) => match direction {
-                KeyDirection::Down => (self.on_key_down)(self, x, y),
-                KeyDirection::Up => (self.on_key_up)(self, x, y),
+                KeyDirection::Down => (self.key_down_handler)(self, x, y),
+                KeyDirection::Up => (self.key_up_handler)(self, x, y),
             },
             _ => { /* nuthin */ }
         }
     }
 
+    fn update_state(&mut self) {
+        (self.frame_handler)(self);
+    }
+
     fn draw(&mut self) {
         self.m.set_all_intensity(&self.pixels);
+    }
+
+    // Helpers
+    pub fn coordinate_to_index(x: i32, y: i32) -> usize {
+        ((y * 16) + x) as usize
+    }
+
+    pub fn index_to_coordinate(index: usize) -> (i32, i32) {
+        let x = index % 16;
+        let y = index / 16;
+
+        (x as i32, y as i32)
     }
 }
