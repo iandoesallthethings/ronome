@@ -2,7 +2,9 @@ use std::env::args;
 
 mod flash;
 mod grid;
+mod keyboard;
 mod life;
+mod midi;
 mod modes;
 
 fn main() {
@@ -13,9 +15,10 @@ fn main() {
             "flash" => flash::main(),
             "modes" => modes::main(),
             "life" => life::main(),
+            "keyboard" => keyboard::main(),
             _ => println!("Demo not found."),
         }
     } else {
-        life::main();
+        keyboard::main();
     }
 }

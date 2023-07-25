@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use crate::midi::Midi;
 use monome::{KeyDirection, Monome, MonomeEvent};
 use std::thread::sleep;
 use std::time::Duration;
@@ -12,6 +13,7 @@ pub struct Grid<Context = ()> {
     m: Monome,
     pub pixels: Vec<u8>,
     pub context: Context,
+    pub midi: Midi,
     key_down_handler: PixelHandler<Context>,
     key_up_handler: PixelHandler<Context>,
     frame_handler: GridHandler<Context>,
@@ -27,6 +29,7 @@ impl<Context> Grid<Context> {
     pub fn new_with_context<NewContext>(context: NewContext) -> Grid<NewContext> {
         Grid {
             m: Monome::new("/prefix").unwrap(),
+            midi: Midi::new(),
             pixels: vec![0; 128],
             key_down_handler: |_, _, _| {},
             key_up_handler: |_, _, _| {},
