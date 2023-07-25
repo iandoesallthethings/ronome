@@ -23,17 +23,17 @@ fn note_off(grid: &mut Grid, x: i32, y: i32) {
 }
 
 fn draw_c(grid: &mut Grid) {
-    let new_pixels = grid.map_pixels(|_, x, y, _, _| {
+    grid.map_pixels(|grid, x, y, _, _| {
         let note = isometric_fourths(x, y);
 
         if note % 12 == 0 {
-            return (note / 12) * 2;
+            let intensity = (note / 12) * 2;
+            grid.set_pixel(x, y, intensity);
+            return intensity;
         }
 
         0
     });
-
-    grid.set_all(new_pixels);
 }
 
 fn isometric_fourths(x: i32, y: i32) -> u8 {
