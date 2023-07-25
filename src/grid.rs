@@ -38,22 +38,48 @@ impl<Context> Grid<Context> {
     // API within handlers
     pub fn get_pixel(&self, x: i32, y: i32) -> u8 {
         let index = self.coordinate_to_index(x, y);
-        self.pixels[index]
+
+        if index > 0 && index < self.pixels.len() {
+            return self.pixels[index];
+        }
+
+        return 0;
     }
 
     pub fn set_pixel(&mut self, x: i32, y: i32, intensity: u8) {
         let index = self.coordinate_to_index(x, y);
 
-        if index > self.pixels.len() - 1 {
-            return;
+        if (0..self.pixels.len()).contains(&index) {
+            self.pixels[index] = intensity;
         }
+    }
 
-        self.pixels[index] = intensity;
+    pub fn set_all(&mut self, new_pixels: Vec<u8>) {
+        self.pixels = new_pixels;
     }
 
     pub fn toggle_pixel(&mut self, x: i32, y: i32) {
         let intensity = Grid::get_pixel(&self, x, y);
         Grid::set_pixel(self, x, y, !intensity);
+    }
+
+    pub fn map_pixels(
+        &mut self,
+        mapper: fn(grid: &mut Grid<Context>, x: i32, y: i32, intensity: u8, index: usize) -> u8,
+    ) -> Vec<u8> {
+        let new_pixels: Vec<u8> = self
+            .pixels
+            .to_owned()
+            .iter()
+            .enumerate()
+            .map(|(index, &intensity)| {
+                let (x, y) = &self.index_to_coordinate(index);
+
+                mapper(self, *x, *y, intensity, index)
+            })
+            .collect::<Vec<u8>>();
+
+        new_pixels
     }
 
     pub fn clear(&mut self) {
@@ -126,4 +152,8 @@ impl<Context> Grid<Context> {
 
         (x as i32, y as i32)
     }
+}
+
+fn is_in_range(x: i32, y: i32) -> bool {
+    x >= 0 && x <= 15 && y >= 0 && y <= 7
 }
