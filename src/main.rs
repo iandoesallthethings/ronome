@@ -1,11 +1,9 @@
 use std::env::args;
-
-mod flash;
+mod examples;
 mod grid;
-mod keyboard;
-mod life;
 mod midi;
-mod modes;
+
+use examples::{flash, keyboard, life, modes};
 
 fn main() {
     let args: Vec<String> = args().collect();
@@ -19,6 +17,7 @@ fn main() {
             _ => println!("Demo not found."),
         }
     } else {
-        keyboard::main();
+        // keyboard::main();
+        life::main();
     }
 }

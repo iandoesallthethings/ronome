@@ -43,10 +43,10 @@ impl<Context> Grid<Context> {
         let index = self.coordinate_to_index(x, y);
 
         if index > 0 && index < self.pixels.len() {
-            return self.pixels[index];
+            self.pixels[index]
+        } else {
+            0
         }
-
-        return 0;
     }
 
     pub fn set_pixel(&mut self, x: i32, y: i32, intensity: u8) {
@@ -54,6 +54,17 @@ impl<Context> Grid<Context> {
 
         if (0..self.pixels.len()).contains(&index) {
             self.pixels[index] = intensity;
+        }
+    }
+    pub fn set_row(&mut self, y: i32, intensity: u8) {
+        for x in 0..16 {
+            self.set_pixel(x, y, intensity);
+        }
+    }
+
+    pub fn set_column(&mut self, x: i32, intensity: u8) {
+        for y in 0..8 {
+            self.set_pixel(x, y, intensity);
         }
     }
 
@@ -70,8 +81,7 @@ impl<Context> Grid<Context> {
         &mut self,
         mapper: fn(grid: &mut Grid<Context>, x: i32, y: i32, intensity: u8, index: usize) -> u8,
     ) -> Vec<u8> {
-        let new_pixels: Vec<u8> = self
-            .pixels
+        self.pixels
             .to_owned()
             .iter()
             .enumerate()
@@ -80,9 +90,7 @@ impl<Context> Grid<Context> {
 
                 mapper(self, *x, *y, intensity, index)
             })
-            .collect::<Vec<u8>>();
-
-        new_pixels
+            .collect::<Vec<u8>>()
     }
 
     pub fn clear(&mut self) {

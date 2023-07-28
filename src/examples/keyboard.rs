@@ -29,10 +29,10 @@ fn draw_c(grid: &mut Grid) {
         if note % 12 == 0 {
             let intensity = (note / 12) * 2;
             grid.set_pixel(x, y, intensity);
-            return intensity;
+            intensity
+        } else {
+            0
         }
-
-        0
     });
 }
 

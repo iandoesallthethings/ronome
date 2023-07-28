@@ -25,6 +25,7 @@ impl Midi {
             },
         );
 
+        dbg!(&event);
         self.send(event);
     }
 
