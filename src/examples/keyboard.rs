@@ -36,6 +36,7 @@ fn draw_c(grid: &mut Grid) {
     });
 }
 
+/* Basically Deluge 🤷‍♂️ */
 fn isometric_fourths(x: i32, y: i32) -> u8 {
     let octave_offset = 12 * 3; // Push up to usable octaves
     let x_offset = -5; // Sliding down so c is in the bottom left
