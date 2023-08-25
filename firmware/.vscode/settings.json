@@ -1,0 +1,8 @@
+{
+	"files.associations": {
+		"*.geojson": "json",
+		"*.svelte": "svelte",
+		"*.heex": "phoenix-heex",
+		"cstddef": "cpp"
+	}
+}

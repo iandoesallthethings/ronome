@@ -1,0 +1,19 @@
+{
+  "folders": [
+	{
+		"path": "../../.."
+	},
+	{
+		"name": "neotrellis_monome_rp2040",
+		"path": "."
+	}
+],
+  "settings": {
+    "files.associations": {
+      "*.geojson": "json",
+      "*.svelte": "svelte",
+      "*.heex": "phoenix-heex",
+      "cstddef": "cpp"
+    }
+  }
+}
